@@ -1,7 +1,7 @@
 <template>
-  <h1>Olá Mundo!!</h1>
+  <ListTasks></ListTasks>
 </template>
 
 <script setup>
-
+  
 </script>

@@ -19,7 +19,6 @@
           density="compact"
           nav
         >
-
             <RouterLink v-for="(item, i) in items"
             :key="i"
             :to="item.to"
@@ -57,7 +56,7 @@
   const drawer = ref(null)
 
   const items = [
-    { text: 'Home', icon: 'mdi-folder', to: '/'},
+    { text: 'Home', icon: 'mdi-folder', to: '/Home'},
     { text: 'About', icon: 'mdi-account-multiple', to: '/about'},
   ];
 </script>
