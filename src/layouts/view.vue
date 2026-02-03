@@ -32,7 +32,7 @@
                     <v-icon :icon="item.icon"></v-icon>
                     </template>
 
-                    <v-list-item-title v-text="item.text"></v-list-item-title>
+                    <v-list-item-title :textContent="item.text"></v-list-item-title>
                 </v-list-item>
             </RouterLink>
         </v-list>
@@ -65,5 +65,6 @@
 <style scoped>
     a{
         text-decoration: none;
+        color: #505050;
     }
 </style>
