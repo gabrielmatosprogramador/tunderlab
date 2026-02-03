@@ -3,16 +3,11 @@
     <v-navigation-drawer v-model="drawer">
         <v-list>
           <v-list-item
-            prepend-avatar="https://cdn.vuetifyjs.com/images/john.png"
-            subtitle="john@google.com"
-            title="John Leider"
+            prepend-avatar="https://github.com/yurimarcon/avatars/blob/main/Colored/ToyFaces_Colored_BG_8.jpg?raw=true"
+            subtitle="Planilha TunderLab"
+            title="Usuário"
           >
             <template v-slot:append>
-              <v-btn
-                icon="mdi-menu-down"
-                size="small"
-                variant="text"
-              ></v-btn>
             </template>
           </v-list-item>
         </v-list>
