@@ -41,7 +41,22 @@
     <v-app-bar>
       <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
 
-      <v-app-bar-title>Tunder Lab</v-app-bar-title>
+      <div>
+        <v-app-bar-title class="col-sm">Tunder Lab</v-app-bar-title>
+      </div>
+      <div>
+        <v-app-bar-title class="col-sm">
+          <v-img
+            :width="100"
+            aspect-ratio="4/3"
+            cover
+            src="@/assets/TunderLabLogo1.png"
+          ></v-img>
+        </v-app-bar-title>
+      </div>
+      <div>
+        <v-app-bar-title class="col-sm"></v-app-bar-title>
+      </div>
     </v-app-bar>
 
     <v-main>
