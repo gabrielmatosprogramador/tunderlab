@@ -5,7 +5,7 @@
           <v-list-item
             prepend-avatar="https://github.com/yurimarcon/avatars/blob/main/Colored/ToyFaces_Colored_BG_8.jpg?raw=true"
             subtitle="Planilha TunderLab"
-            title="Usuário"
+            title="Usuário: ID" 
           >
             <template v-slot:append>
             </template>
