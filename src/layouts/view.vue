@@ -5,7 +5,7 @@
           <v-list-item
             prepend-avatar="https://github.com/yurimarcon/avatars/blob/main/Colored/ToyFaces_Colored_BG_8.jpg?raw=true"
             subtitle="Planilha TunderLab"
-            title="Usuário"
+            title="Usuário: ID" 
           >
             <template v-slot:append>
             </template>
@@ -19,7 +19,6 @@
           density="compact"
           nav
         >
-
             <RouterLink v-for="(item, i) in items"
             :key="i"
             :to="item.to"
@@ -42,7 +41,22 @@
     <v-app-bar>
       <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
 
-      <v-app-bar-title>Tunder Lab</v-app-bar-title>
+      <div>
+        <v-app-bar-title class="col-sm">Tunder Lab</v-app-bar-title>
+      </div>
+      <div>
+        <v-app-bar-title class="col-sm">
+          <v-img
+            :width="100"
+            aspect-ratio="4/3"
+            cover
+            src="@/assets/TunderLabLogo1.png"
+          ></v-img>
+        </v-app-bar-title>
+      </div>
+      <div>
+        <v-app-bar-title class="col-sm"></v-app-bar-title>
+      </div>
     </v-app-bar>
 
     <v-main>
@@ -57,7 +71,7 @@
   const drawer = ref(null)
 
   const items = [
-    { text: 'Home', icon: 'mdi-folder', to: '/'},
+    { text: 'Home', icon: 'mdi-folder', to: '/Home'},
     { text: 'About', icon: 'mdi-account-multiple', to: '/about'},
   ];
 </script>

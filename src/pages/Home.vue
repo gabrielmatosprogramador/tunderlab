@@ -1,7 +1,7 @@
 <template>
-  <h1>Olá Mundo!!</h1>
+  <TodoList></TodoList>
 </template>
 
 <script setup>
-
+  import TodoList from '@/components/TodoList.vue';
 </script>
