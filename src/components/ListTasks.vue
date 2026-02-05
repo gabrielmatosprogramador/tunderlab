@@ -48,7 +48,8 @@ import DialogTaskFields from './DialogTaskFields.vue';
 import DialogDelete from './DialogDelete.vue';
 import { useTaskStore } from '@/stores/task.js';
 
-
 const taskStore = useTaskStore();
+
+const settingsSelection = ref([]);
 
 </script>

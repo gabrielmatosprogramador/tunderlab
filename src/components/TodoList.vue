@@ -10,11 +10,15 @@
 </template>
 
 <script setup>
+import { onMounted } from 'vue';
 import ListTasks from '@/components/ListTasks.vue';
 import { useTaskStore } from '@/stores/task.js';
 
 
 const taskStore = useTaskStore();
-const tasks = ref(taskStore.tasks);
+
+onMounted(()=>{
+  taskStore.getTasks();
+})
 
 </script>
