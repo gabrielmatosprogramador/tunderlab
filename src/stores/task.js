@@ -3,14 +3,7 @@ import { defineStore } from 'pinia'
 
 export const useTaskStore = defineStore('task', {
   state: () => ({
-    tasks: [{
-      title: "Estudar Vue",
-      description: "Estudar VUE com Vuetify"
-    },
-    {
-      title: "Estudar React",
-      description: "Estudar React com Vuetify"
-    }],
+    tasks: [],
     titleTaskCreation: "",
     showDialogDelete: false,
     indexTaskSelected: 0,
@@ -23,17 +16,22 @@ export const useTaskStore = defineStore('task', {
         title: this.titleTaskCreation
       })
       this.titleTaskCreation = "";
-    },
-    openDialogDelete(index) {
-      this.showDialogDelete = !this.showDialogDelete;
-      if (index != null) {
-        this.indexTaskSelected = index;
-      }
+      this.saveLocalData();
     },
 
     deleteTask(){
     this.tasks.splice(this.indexTaskSelected,1);
     this.openDialogDelete();
+    this.saveLocalData();
+    },
+
+    openDialogDelete(index) {
+      this.showDialogDelete = !this.showDialogDelete;
+      if (index != null) {
+        this.indexTaskSelected = index;
+      }
+      this.saveLocalData();
+
     },
 
     openDialog (index) {
@@ -41,6 +39,20 @@ export const useTaskStore = defineStore('task', {
       if (index != null) {
           this.indexTaskSelected = index;
       }
+      this.saveLocalData();
+    },
+
+    saveLocalData(){
+      localStorage.setItem('tasks',
+        JSON.stringify(this.tasks)
+      )
+    },
+
+    getTasks(){
+      let items = localStorage.getItem('tasks');
+      if(items){
+        this.tasks = JSON.parse(items);
+    }
     }
   }
 })
