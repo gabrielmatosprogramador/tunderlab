@@ -1,49 +1,79 @@
 <template>
-    <div>
-        <v-list v-model:selected="settingsSelection" lines="three" select-strategy="leaf">
-            <v-list-subheader>Exercícios</v-list-subheader>
+  <div>
+    <v-expansion-panels variant="accordion">
+      
+      <v-expansion-panel 
+        v-for="(task, index) in taskStore.tasks" 
+        :key="index"
+      >
+        <v-expansion-panel-title>
+          <template v-slot:default>
+            <div class="d-flex align-center w-100">
+              
+              <div class="mr-2">
+                 <v-checkbox-btn 
+                    :model-value="settingsSelection.includes(index)" 
+                    @click.stop="toggleSelection(index)"
+                 ></v-checkbox-btn>
+              </div>
 
-            <v-list-item v-for="task, index in taskStore.tasks" :key="index" :value="index">
-                <template v-slot:prepend="{ isSelected, select }">
-                    <v-list-item-action start>
-                        <v-checkbox-btn :model-value="isSelected" @update:model-value="select"></v-checkbox-btn>
-                    </v-list-item-action>
-                </template>
+              <span class="text-h6 font-weight-regular">
+                  {{ task.title }}
+              </span>
+              
+              <v-spacer></v-spacer>
 
-                <v-list-item-title>{{ task.title }}</v-list-item-title>
+              <div class="mr-2">
+                <v-menu>
+                  <template v-slot:activator="{ props }">
+                    <v-btn 
+                      color="grey-lighten-1" 
+                      icon="mdi-dots-vertical" 
+                      variant="text" 
+                      v-bind="props"
+                      @click.stop
+                    >
+                    </v-btn>
+                  </template>
+                  <v-list>
+                    <v-list-item value="edit" @click="taskStore.openDialog(index)">
+                      <v-list-item-title>Editar</v-list-item-title>
+                    </v-list-item>
 
-                <v-list-item-subtitle>{{ task.description }}</v-list-item-subtitle>
-                
-                <template v-slot:append>
-                    <v-menu>
-                        <template v-slot:activator="{ props }">
-                            <v-btn color="grey-lighten-1" icon="mdi-dots-vertical" variant="text" v-bind="props">
+                    <v-list-item value="delet" @click="taskStore.openDialogDelete(index)">
+                      <v-list-item-title>Deletar</v-list-item-title>
+                    </v-list-item>
+                  </v-list>
+                </v-menu>
+              </div>
 
-                            </v-btn>
-                        </template>
-                        <v-list>
-                            <v-list-item value="edit" @click="taskStore.openDialog(index)">
-                                <v-list-item-title>Editar</v-list-item-title>
-                            </v-list-item>
+            </div>
+          </template>
+        </v-expansion-panel-title>
 
-                            <v-list-item value="delet" @click="taskStore.openDialogDelete(index)">
-                                <v-list-item-title>Deletar</v-list-item-title>
-                            </v-list-item>
-                        </v-list>
-                    </v-menu>
-                </template>
-            </v-list-item>
-        </v-list>
-        <dialog-task-fields 
-        :dialog="taskStore.showDialogTaskFields" 
-        :task="taskStore.tasks[taskStore.indexTaskSelected]" 
-        />
+        <v-expansion-panel-text style="white-space: pre-wrap;">
+          <div v-if="task.description" class="text-body-1 text-grey-darken-1">
+            {{ task.description }}
+          </div>
+          <div v-else class="text-caption text-grey-lighten-1">
+            Sem descrição.
+          </div>
+        </v-expansion-panel-text>
 
-        <dialog-delete/>
-    </div>
+      </v-expansion-panel>
+    </v-expansion-panels>
+
+    <dialog-task-fields 
+      :dialog="taskStore.showDialogTaskFields" 
+      :task="taskStore.tasks[taskStore.indexTaskSelected]" 
+    />
+
+    <dialog-delete/>
+  </div>
 </template>
 
 <script setup>
+import { ref } from 'vue';
 import DialogTaskFields from './DialogTaskFields.vue';
 import DialogDelete from './DialogDelete.vue';
 import { useTaskStore } from '@/stores/task.js';
@@ -52,4 +82,11 @@ const taskStore = useTaskStore();
 
 const settingsSelection = ref([]);
 
+const toggleSelection = (index) => {
+  if (settingsSelection.value.includes(index)) {
+    settingsSelection.value = settingsSelection.value.filter(i => i !== index);
+  } else {
+    settingsSelection.value.push(index);
+  }
+}
 </script>
