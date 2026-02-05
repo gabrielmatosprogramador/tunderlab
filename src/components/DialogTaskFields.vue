@@ -1,27 +1,25 @@
 <template>
   <div class="text-center pa-4">
-    <v-dialog v-model="props.dialog" max-width="400" persistent>
-      <!-- <template v-slot:activator="{ props: activatorProps }">
-        <v-btn v-bind="activatorProps">
-          Open Dialog
-        </v-btn>
-      </template> -->
-
+    <v-dialog v-model="taskStore.showDialogTaskFields" max-width="400" persistent>
       <v-card prepend-icon="mdi-map-marker" title="Editar Tarefa">
         <v-text-field 
         v-model="props.task.title"
         label="Titulo"></v-text-field>
 
-        <v-text-field 
-        v-model="props.task.description"
-        label="Descrição"></v-text-field>
+        <v-textarea
+          v-model="props.task.description"
+          label="Message"
+          maxlength="120"
+          counter
+          single-line
+        ></v-textarea>
 
         <template v-slot:actions>
 
 
           <v-spacer></v-spacer>
-          <v-btn @click="$emit('openDialog')">
-            Agree
+          <v-btn @click="taskStore.openDialog()">
+            Editar
           </v-btn>
         </template>
       </v-card>
@@ -31,9 +29,12 @@
 
 <script setup>
 import { defineProps } from 'vue';
+import { useTaskStore } from '@/stores/task.js';
+
+
+const taskStore = useTaskStore();
 
 const props = defineProps({
-  dialog: Boolean,
   task: Object
 })
 

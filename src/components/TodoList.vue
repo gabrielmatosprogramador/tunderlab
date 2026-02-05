@@ -1,41 +1,20 @@
 <template>
-  <v-text-field clearable label="Adicionar Exercicio" v-model="task.title" @keyup.enter="addTask">
+  <v-text-field 
+  clearable 
+  label="Adicionar Exercicio" 
+  v-model="taskStore.titleTaskCreation" 
+  @keyup.enter="taskStore.addTask">
   </v-text-field>
 
-  <ListTasks :tasks="tasks"></ListTasks>
+  <ListTasks/>
 </template>
 
 <script setup>
 import ListTasks from '@/components/ListTasks.vue';
+import { useTaskStore } from '@/stores/task.js';
 
 
-const tasks = ref([
-  {
-    title: "Estudar Vue",
-    description: "Estudar VUE com Vuetify"
-  },
-  {
-    title: "Estudar React",
-    description: "Estudar React com Vuetify"
-  }
+const taskStore = useTaskStore();
+const tasks = ref(taskStore.tasks);
 
-]);
-
-const settingsSelection = ref([])
-
-const task = ref({
-  title: "",
-  description: ""
-});
-
-const addTask = () => {
-  tasks.value.push({
-    title: task.value.title,
-    description: task.value.description
-  })
-  task.value = {
-    title: "",
-    description: ""
-  }
-}
 </script>
