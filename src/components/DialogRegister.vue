@@ -67,6 +67,11 @@
   const loading = ref(false)
 
   const handleRegister = async () => {
+    if (!name.value){
+      alert('Por favor, insira seu nome.')
+      return;
+    }
+
     try {
       loading.value = true
       // Agora a ordem bate com a store: email, senha, NOME, telefone

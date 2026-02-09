@@ -13,11 +13,11 @@
         <template v-slot:actions>
           <v-spacer></v-spacer>
 
-          <v-btn @click="taskStore.openDialogDelete">
+          <v-btn @click="taskStore.showDialogDelete = false" variant="text">
             Cancelar
           </v-btn>
 
-          <v-btn @click="taskStore.deleteTask">
+          <v-btn @click="taskStore.deleteTask()" color="error" variant="text">
             Deletar
           </v-btn>
         </template>
@@ -27,7 +27,6 @@
 </template>
 <script setup>
 import { useTaskStore } from '@/stores/task.js';
-
 
 const taskStore = useTaskStore();
 
