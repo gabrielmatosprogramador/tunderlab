@@ -42,6 +42,14 @@ export const useTaskStore = defineStore('task', {
       this.saveLocalData();
     },
 
+    openLoginDialog (index) {
+      this.showDialogTaskFields = !this.showDialogTaskFields;
+      if (index != null) {
+          this.indexTaskSelected = index;
+      }
+      this.saveLocalData();
+    },
+
     saveLocalData(){
       localStorage.setItem('tasks',
         JSON.stringify(this.tasks)
