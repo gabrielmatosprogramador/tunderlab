@@ -1,6 +1,5 @@
 <template>
-  <v-app>
-    
+  <v-app>  
     <View></View>
   </v-app>
 </template>
