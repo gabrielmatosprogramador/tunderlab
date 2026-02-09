@@ -40,14 +40,14 @@
       v-model="dialogLogin"
       width="auto"
     >
-      <DialogLogin/>
+      <DialogLogin @close="dialogLogin = false" />
     </v-dialog>
 
     <v-dialog
       v-model="dialogRegister"
       width="auto"
     >
-      <DialogRegister />
+      <DialogRegister @close="dialogRegister = false" />
     </v-dialog>
 
   </v-container>
