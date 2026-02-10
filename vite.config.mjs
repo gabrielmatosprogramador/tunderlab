@@ -8,15 +8,18 @@ import VueRouter from 'unplugin-vue-router/vite'
 import { VueRouterAutoImports } from 'unplugin-vue-router'
 import Vuetify, { transformAssetUrls } from 'vite-plugin-vuetify'
 
+
 // Utilities
 import { defineConfig } from 'vite'
 import { fileURLToPath, URL } from 'node:url'
+import { VitePWA } from 'vite-plugin-pwa'
 
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
     VueRouter(),
     Layouts(),
+    VitePWA({ registerType: 'autoUpdate' }),
     Vue({
       template: { transformAssetUrls },
     }),
@@ -77,4 +80,7 @@ export default defineConfig({
   server: {
     port: 3000,
   },
+  
+  
+  
 })
