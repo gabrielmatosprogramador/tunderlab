@@ -1,39 +1,29 @@
 import { defineStore } from 'pinia'
 import { supabase } from '@/lib/supabaseClient'
-import { useRouter } from 'vue-router'
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
     user: null,
-    role: null, 
-    studentId: null 
+    role: null,     
+    studentId: null, 
+    userName: ''     
   }),
+
   actions: {
     async login(email, password) {
-      // 1. Login no Supabase
       const { data, error } = await supabase.auth.signInWithPassword({ email, password })
       if (error) throw error
+      
       this.user = data.user
 
-      // 2. Tenta encontrar na tabela de PERSONAIS (profiles)
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('id')
-        .eq('id', this.user.id)
-        .maybeSingle() 
-      
-      if (profile) {
+      await this.fetchUser()
+
+      if (this.role === 'personal') {
         return '/' 
       }
-
-      const { data: student } = await supabase
-        .from('students')
-        .select('id')
-        .eq('email', this.user.email)
-        .maybeSingle()
-
-      if (student) {
-        return '/StudentDashboard' 
+      
+      if (this.role === 'student') {
+        return '/StudentView' 
       }
       
       throw new Error("Usuário não possui perfil de Personal nem de Aluno.")
@@ -43,7 +33,6 @@ export const useAuthStore = defineStore('auth', {
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
-        
         options: {
           data: { 
             full_name: fullName, 
@@ -53,28 +42,49 @@ export const useAuthStore = defineStore('auth', {
       })
       if (error) throw error
       this.user = data.user
+      if (this.user) await this.fetchUser()
     },
     
     async logout() {
       await supabase.auth.signOut()
       this.user = null
-      this.profile = null
+      this.role = null
+      this.studentId = null
+      this.userName = '' 
     },
     
     async fetchUser() {
       const { data } = await supabase.auth.getUser()
+      
       if (data.user) {
         this.user = data.user
-        const { data: profile } = await supabase.from('profiles').select('id').eq('id', this.user.id).single()
+        let { data: profile } = await supabase
+          .from('profiles')
+          .select('id, full_name') 
+          .eq('id', this.user.id)
+          .maybeSingle()
+
         if (profile) {
           this.role = 'personal'
-        } else {
-          const { data: student } = await supabase.from('students').select('id').eq('email', this.user.email).single()
-          if (student) {
-            this.role = 'student'
-            this.studentId = student.id
-          }
+          this.userName = profile.full_name || 'Personal'
+          return 
         }
+        let { data: student } = await supabase
+          .from('students')
+          .select('id, name') 
+          .eq('email', this.user.email) 
+          .maybeSingle()
+          
+        if (student) {
+          this.role = 'student'
+          this.studentId = student.id
+          this.userName = student.name || 'Aluno'
+        }
+      } else {
+        this.user = null
+        this.role = null
+        this.studentId = null
+        this.userName = ''
       }
     }
   }
