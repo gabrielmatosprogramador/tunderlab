@@ -1,79 +1,198 @@
-# Vuetify (Default)
+# 🏋️‍♂️ TunderLab
 
-This is the official scaffolding tool for Vuetify, designed to give you a head start in building your new Vuetify application. It sets up a base template with all the necessary configurations and standard directory structure, enabling you to begin development without the hassle of setting up the project from scratch.
+**TunderLab** é uma plataforma web moderna para gerenciamento de treinos, conectando Personal Trainers aos seus alunos. O sistema permite que o personal crie cronogramas de exercícios personalizados e que os alunos visualizem suas atividades diárias através de uma interface intuitiva e responsiva.
 
-## ❗️ Important Links
+---
 
-- 📄 [Docs](https://vuetifyjs.com/)
-- 🚨 [Issues](https://issues.vuetifyjs.com/)
-- 🏬 [Store](https://store.vuetifyjs.com/)
-- 🎮 [Playground](https://play.vuetifyjs.com/)
-- 💬 [Discord](https://community.vuetifyjs.com)
+## 🚀 Tecnologias Utilizadas
 
-## 💿 Install
+O projeto foi construído com uma stack moderna focada em performance e experiência do desenvolvedor:
 
-Set up your project using your preferred package manager. Use the corresponding command to install the dependencies:
+* **Frontend Framework:** [Vue.js 3](https://vuejs.org/) (Composition API)
+* **Build Tool:** [Vite](https://vitejs.dev/)
+* **UI Library:** [Vuetify 3](https://vuetifyjs.com/)
+* **State Management:** [Pinia](https://pinia.vuejs.org/)
+* **Roteamento:** [Vue Router](https://router.vuejs.org/) (com `unplugin-vue-router`)
+* **Backend as a Service:** [Supabase](https://supabase.com/) (Auth, Database, Realtime)
+* **Linter:** [ESLint](https://eslint.org/)
 
-| Package Manager                                                | Command        |
-|---------------------------------------------------------------|----------------|
-| [yarn](https://yarnpkg.com/getting-started)                   | `yarn install` |
-| [npm](https://docs.npmjs.com/cli/v7/commands/npm-install)     | `npm install`  |
-| [pnpm](https://pnpm.io/installation)                          | `pnpm install` |
-| [bun](https://bun.sh/#getting-started)                        | `bun install`  |
+---
 
-After completing the installation, your environment is ready for Vuetify development.
+## ⚙️ Pré-requisitos
 
-## ✨ Features
+Antes de começar, certifique-se de ter instalado em sua máquina:
+* [Node.js](https://nodejs.org/) (Versão 18+ recomendada)
+* [NPM](https://www.npmjs.com/) ou Yarn
 
-- 🖼️ **Optimized Front-End Stack**: Leverage the latest Vue 3 and Vuetify 3 for a modern, reactive UI development experience. [Vue 3](https://v3.vuejs.org/) | [Vuetify 3](https://vuetifyjs.com/en/)
-- 🗃️ **State Management**: Integrated with [Pinia](https://pinia.vuejs.org/), the intuitive, modular state management solution for Vue.
-- 🚦 **Routing and Layouts**: Utilizes Vue Router for SPA navigation and vite-plugin-vue-layouts for organizing Vue file layouts. [Vue Router](https://router.vuejs.org/) | [vite-plugin-vue-layouts](https://github.com/JohnCampionJr/vite-plugin-vue-layouts)
-- ⚡ **Next-Gen Tooling**: Powered by Vite, experience fast cold starts and instant HMR (Hot Module Replacement). [Vite](https://vitejs.dev/)
-- 🧩 **Automated Component Importing**: Streamline your workflow with unplugin-vue-components, automatically importing components as you use them. [unplugin-vue-components](https://github.com/antfu/unplugin-vue-components)
+---
 
-These features are curated to provide a seamless development experience from setup to deployment, ensuring that your Vuetify application is both powerful and maintainable.
+## 🔧 Instalação e Configuração
 
-## 💡 Usage
+1.  **Clone o repositório:**
+    ```bash
+    git clone [https://github.com/seu-usuario/tunderlab.git](https://github.com/seu-usuario/tunderlab.git)
+    cd tunderlab
+    ```
 
-This section covers how to start the development server and build your project for production.
+2.  **Instale as dependências:**
+    ```bash
+    npm install
+    # ou
+    yarn install
+    ```
 
-### Starting the Development Server
+3.  **Configuração de Ambiente (.env):**
+    Crie um arquivo `.env` na raiz do projeto com as chaves do seu projeto Supabase:
 
-To start the development server with hot-reload, run the following command. The server will be accessible at [http://localhost:3000](http://localhost:3000):
+    ```env
+    VITE_SUPABASE_URL=sua_url_do_supabase
+    VITE_SUPABASE_ANON_KEY=sua_chave_anonima_do_supabase
+    ```
 
-```bash
-yarn dev
+4.  **Execute o projeto:**
+    ```bash
+    npm run dev
+    ```
+    O app estará disponível em `http://localhost:3000`.
+
+---
+
+## 🗄️ Setup do Banco de Dados (Supabase)
+
+Para que o sistema de Login (Personal vs Aluno) e Tarefas funcione, execute os comandos SQL abaixo no **SQL Editor** do seu painel Supabase.
+
+### 1. Estrutura de Tabelas
+```sql
+create table public.profiles (
+  id uuid references auth.users not null primary key,
+  email text,
+  full_name text
+);
+
+
+create table public.students (
+  id uuid default uuid_generate_v4() primary key,
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null,
+  name text not null,
+  email text not null unique,
+  phone text,
+  personal_id uuid references auth.users not null
+);
+
+create table public.tasks (
+  id uuid default uuid_generate_v4() primary key,
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null,
+  title text not null,
+  description text,
+  day_of_week text,
+  student_id uuid references public.students not null
+);
+```
+### 2. Automação de Cadastro (Triggers)
+
+```sql
+create or replace function public.handle_new_user()
+returns trigger as $$
+begin
+  if exists (select 1 from public.students where email = new.email) then
+    return new;
+  else
+    insert into public.profiles (id, email, full_name)
+    values (new.id, new.email, new.raw_user_meta_data->>'full_name');
+    return new;
+  end if;
+end;
+$$ language plpgsql security definer;
+
+create trigger on_auth_user_created
+  after insert on auth.users
+  for each row execute procedure public.handle_new_user();
 ```
 
-(Repeat for npm, pnpm, and bun with respective commands.)
+### 3. Políticas de Segurança (RLS)
+```sql
+alter table public.students enable row level security;
+alter table public.tasks enable row level security;
 
-> Add NODE_OPTIONS='--no-warnings' to suppress the JSON import warnings that happen as part of the Vuetify import mapping. If you are on Node [v21.3.0](https://nodejs.org/en/blog/release/v21.3.0) or higher, you can change this to NODE_OPTIONS='--disable-warning=5401'. If you don't mind the warning, you can remove this from your package.json dev script.
+create policy "Aluno vê perfil" on public.students for select
+using (email = auth.jwt() ->> 'email');
 
-### Building for Production
+create policy "Aluno vê tarefas" on public.tasks for select
+using (student_id in (select id from public.students where email = auth.jwt() ->> 'email'));
+```
+---
 
-To build your project for production, use:
+## 🧪 Testes Automatizados
+Este projeto está configurado para utilizar testes unitários e testes de sistema (E2E).
 
+### 1. Testes Unitários (Unit Tests)
+Utilizamos Vitest para testar a lógica das Stores (Pinia) e funções isoladas.
+
+Instalação das ferramentas (caso não tenha):
 ```bash
-yarn build
+npm install -D vitest
+```
+Comando para rodar:
+```bash
+npm run test:unit
+```
+Exemplo de teste:
+```bash
+import { setActivePinia, createPinia } from 'pinia'
+import { useAuthStore } from '../auth'
+import { describe, it, expect, beforeEach } from 'vitest'
+
+describe('Auth Store', () => {
+  beforeEach(() => { setActivePinia(createPinia()) })
+
+  it('deve iniciar com usuário nulo', () => {
+    const auth = useAuthStore()
+    expect(auth.user).toBeNull()
+  })
+})
+```
+### 2. Testes de Sistema (E2E)
+Utilizamos Cypress para simular a navegação do usuário real.
+
+Instalação do Cypress:
+```bash
+npm install -D cypress
+```
+Comando para rodar:
+```bash
+npx cypress open
 ```
 
-(Repeat for npm, pnpm, and bun with respective commands.)
+Cenário de Teste Sugerido (Login de Aluno):
 
-Once the build process is completed, your application will be ready for deployment in a production environment.
+Acessa a página de Login.
 
-## 💪 Support Vuetify Development
+Digita e-mail de aluno e senha.
 
-This project is built with [Vuetify](https://vuetifyjs.com/en/), a UI Library with a comprehensive collection of Vue components. Vuetify is an MIT licensed Open Source project that has been made possible due to the generous contributions by our [sponsors and backers](https://vuetifyjs.com/introduction/sponsors-and-backers/). If you are interested in supporting this project, please consider:
+Clica em "Entrar".
 
-- [Requesting Enterprise Support](https://support.vuetifyjs.com/)
-- [Sponsoring John on Github](https://github.com/users/johnleider/sponsorship)
-- [Sponsoring Kael on Github](https://github.com/users/kaelwd/sponsorship)
-- [Supporting the team on Open Collective](https://opencollective.com/vuetify)
-- [Becoming a sponsor on Patreon](https://www.patreon.com/vuetify)
-- [Becoming a subscriber on Tidelift](https://tidelift.com/subscription/npm/vuetify)
-- [Making a one-time donation with Paypal](https://paypal.me/vuetify)
+Verifica se foi redirecionado para /StudentVew.
 
-## 📑 License
-[MIT](http://opensource.org/licenses/MIT)
+Verifica se a lista de treinos foi carregada corretamente.
 
-Copyright (c) 2016-present Vuetify, LLC
+---
+
+## 📂 Estrutura do Projeto
+- src/components: Componentes reutilizáveis (Modais, Listas, Cards).
+
+- src/layouts: Estruturas de página (Barra lateral, Topo).
+
+- src/pages: Páginas da aplicação (Roteamento automático).
+
+  - index.vue: Dashboard do Personal (Gestão).
+
+  - StudentView.vue: Área do Aluno (Visualização).
+
+  - LoginPage.vue: Tela de Login.
+
+- src/stores: Gerenciamento de estado global (Auth, Tasks, Students).
+
+- src/lib: Configuração do cliente Supabase.
+
+---
+
