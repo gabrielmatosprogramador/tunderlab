@@ -117,7 +117,6 @@
 import { ref, onMounted, computed } from 'vue';
 import { useTaskStore } from '@/stores/task.js';
 
-// Importação dos sub-componentes
 import DialogTaskFields from './DialogTaskFields.vue';
 import DialogDelete from './DialogDelete.vue';
 import DialogAddStudent from './DialogAddStudent.vue';
@@ -125,9 +124,6 @@ import DialogAddStudent from './DialogAddStudent.vue';
 const taskStore = useTaskStore();
 const showAddStudentDialog = ref(false);
 
-/**
- * Lógica de Agrupamento Triplo: Aluno > Dia > Tarefas
- */
 const groupedTasks = computed(() => {
   const students = {};
 
@@ -147,18 +143,15 @@ const groupedTasks = computed(() => {
     students[sId].days[day].push(task);
   });
 
-  // Ordem cronológica dos dias para a interface
   const order = ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado', 'Domingo'];
   
   return Object.values(students).map(s => {
     const sortedDays = {};
     
-    // Adiciona os dias conforme a ordem definida
     order.forEach(d => {
       if (s.days[d]) sortedDays[d] = s.days[d];
     });
 
-    // Adiciona qualquer dia extra (ex: 'Não Definido') ao final
     Object.keys(s.days).forEach(d => {
       if (!order.includes(d)) sortedDays[d] = s.days[d];
     });
@@ -168,9 +161,6 @@ const groupedTasks = computed(() => {
   });
 });
 
-/**
- * Funções auxiliares para abrir modais com a tarefa correta
- */
 const openEdit = (task) => {
   const index = taskStore.tasks.findIndex(t => t.id === task.id);
   if (index !== -1) taskStore.openDialog(index);
@@ -181,14 +171,12 @@ const openDelete = (task) => {
   if (index !== -1) taskStore.openDialogDelete(index);
 };
 
-// Carregar dados ao montar o componente
 onMounted(() => {
   taskStore.fetchTasks();
 });
 </script>
 
 <style scoped>
-/* Estilização suave para os painéis aninhados */
 .v-expansion-panel-text :deep(.v-expansion-panel-text__wrapper) {
   padding: 8px 12px 16px;
 }

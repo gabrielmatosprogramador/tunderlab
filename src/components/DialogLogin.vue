@@ -34,27 +34,34 @@
 
 <script setup>
 import { ref } from 'vue'
-import { useAuthStore } from '@/stores/auth'
 import { useRouter } from 'vue-router'
+import { useAuthStore } from '@/stores/auth'
 
-// Define o evento para fechar o modal
 const emit = defineEmits(['close'])
+const props = defineProps(['modelValue'])
 
 const router = useRouter()
-
 const authStore = useAuthStore()
+
 const email = ref('')
-const password = ref('')
-const loading = ref(false)
+const password = ref('') 
+const loading = ref(false) 
 
 const handleLogin = async () => {
+  if (!email.value || !password.value) {
+    alert("Por favor, preencha e-mail e senha.")
+    return
+  }
+
   try {
-    loading.value = true
-    await authStore.login(email.value, password.value)
+    loading.value = true 
+    const destinationRoute = await authStore.login(email.value, password.value)
     emit('close')
-    router.push('/')
+    router.push(destinationRoute)
+    
   } catch (error) {
-    alert(error.message)
+    console.error(error)
+    alert("Erro ao entrar: " + (error.message || "Verifique seus dados"))
   } finally {
     loading.value = false
   }
