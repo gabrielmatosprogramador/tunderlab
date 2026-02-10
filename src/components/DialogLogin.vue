@@ -33,26 +33,16 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import { useAuthStore } from '@/stores/auth'
-import { useRouter } from 'vue-router'
-
-// Define o evento para fechar o modal
-const emit = defineEmits(['close'])
-
+import { useRouter } from 'vue-router' 
 const router = useRouter()
-
-const authStore = useAuthStore()
-const email = ref('')
-const password = ref('')
-const loading = ref(false)
 
 const handleLogin = async () => {
   try {
     loading.value = true
-    await authStore.login(email.value, password.value)
-    emit('close')
-    router.push('/')
+    const routeDestination = await authStore.login(email.value, password.value)
+    emit('close') 
+    router.push(routeDestination)
+    
   } catch (error) {
     alert(error.message)
   } finally {
