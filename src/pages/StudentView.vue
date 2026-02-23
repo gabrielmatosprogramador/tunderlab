@@ -1,5 +1,6 @@
 <template>
-  <v-img src="@/assets/crossbackground.jpg" 
+  <v-img 
+  src="@/assets/crossbackground.jpg" 
   cover 
   class="position-absolute w-100 h-100 opacity-25 ma-0 pl-0"
   gradient="to top right, rgba(0,0,0,.8), rgba(77,77,77,.8)"
