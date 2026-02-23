@@ -1,6 +1,9 @@
 <template>
-  <v-img src="@/assets/crossbackground.jpg" cover class="position-absolute w-100 h-100 opacity-25"
-    gradient="to top right, rgba(0,43,124,.5), rgba(104,150,239,.5)">
+  <v-img 
+  src="@/assets/crossbackground.jpg" 
+  cover 
+  class="position-absolute w-100 h-100 opacity-25"
+  gradient="to top right, rgba(0,43,124,.5), rgba(104,150,239,.5)">
     <v-container class="fill-height bg-deep-blue-darken-4" fluid>
 
       <v-row justify="center" align="center">
