@@ -3,7 +3,7 @@
     <v-img 
     src="@/assets/crossbackground.jpg" 
     cover class="position-absolute w-100 h-100 opacity-25"
-    gradient="to top right, rgba(0,43,124,.6), rgba(104,150,239,.6)"
+    gradient="to top right, rgba(0,43,124,.5), rgba(104,150,239,.5)"
     >
       <v-row justify="center" align="center">
         <v-col cols="12" sm="8" md="6" class="text-center">
