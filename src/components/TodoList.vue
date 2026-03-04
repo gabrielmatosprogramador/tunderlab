@@ -22,12 +22,12 @@
         </v-col>
 
         <v-col cols="12" md="3">
-          <v-text-field v-model="taskStore.titleTaskCreation" label="Exercício" placeholder="Ex: Supino Reto"
+          <v-text-field v-model="taskStore.titleTaskCreation" label="Atividade" placeholder="Ex: Aquecimento"
             variant="outlined" density="compact" hide-details :disabled="!selectedStudentId"></v-text-field>
         </v-col>
 
         <v-col cols="12" md="4">
-          <v-text-field v-model="taskStore.descriptionTaskCreation" label="Descrição" placeholder="Ex: 3x12 - 40kg"
+          <v-text-field v-model="taskStore.descriptionTaskCreation" label="Descrição" placeholder="Ex: 3 Rounds"
             variant="outlined" density="compact" hide-details :disabled="!selectedStudentId"
             @keyup.enter="handleAddTask">
             <template v-slot:append-inner>
