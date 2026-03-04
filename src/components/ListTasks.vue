@@ -17,12 +17,50 @@
       </v-btn>
     </div>
 
+    <v-row class="mb-4 pa-2">
+      <v-col cols="12" md="6">
+        <v-select
+          v-model="selectedStudent"
+          :items="availableStudents"
+          item-title="name"
+          item-value="id"
+          label="Filtrar por Aluno"
+          placeholder="Todos os alunos"
+          variant="outlined"
+          density="compact"
+          clearable
+          prepend-inner-icon="mdi-account-search"
+          hide-details
+        ></v-select>
+      </v-col>
+      
+      <v-col cols="12" md="6">
+        <v-select
+          v-model="selectedWeek"
+          :items="availableWeeks"
+          label="Filtrar por Semana"
+          placeholder="Todas as semanas"
+          variant="outlined"
+          density="compact"
+          clearable
+          prepend-inner-icon="mdi-calendar-range"
+          hide-details
+          :disabled="availableWeeks.length === 0"
+        ></v-select>
+      </v-col>
+    </v-row>
+
     <div v-if="taskStore.tasks.length === 0 && !taskStore.loading" class="text-center text-grey mt-10">
       <v-icon icon="mdi-clipboard-text-off" size="60" class="mb-2"></v-icon>
-      <p>Nenhuma atividade cadastrada.</p>
+      <p>Nenhuma atividade cadastrada no sistema.</p>
     </div>
 
-    <v-expansion-panels variant="popout" class="mb-4">
+    <div v-else-if="groupedTasks.length === 0" class="text-center text-grey mt-10">
+      <v-icon icon="mdi-filter-variant-remove" size="60" class="mb-2"></v-icon>
+      <p>Nenhum treino encontrado para os filtros selecionados.</p>
+    </div>
+
+    <v-expansion-panels v-else variant="popout" class="mb-4">
       <v-expansion-panel 
         v-for="student in groupedTasks" 
         :key="student.id"
@@ -114,7 +152,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, computed, watch } from 'vue';
 import { useTaskStore } from '@/stores/task.js';
 
 import DialogTaskFields from './DialogTaskFields.vue';
@@ -124,10 +162,95 @@ import DialogAddStudent from './DialogAddStudent.vue';
 const taskStore = useTaskStore();
 const showAddStudentDialog = ref(false);
 
+// Refs para os filtros de busca
+const selectedStudent = ref(null);
+const selectedWeek = ref(null);
+
+// Função para calcular qual semana a data pertence (mesma lógica do aluno)
+const getWeekLabel = (dateString) => {
+  if (!dateString) return 'Semanas Anteriores';
+  const d = new Date(dateString);
+  const day = d.getDay(); 
+  const diff = d.getDate() - day + (day === 0 ? -6 : 1);
+  const monday = new Date(d.setDate(diff));
+  
+  const friday = new Date(monday.getTime());
+  friday.setDate(monday.getDate() + 4);
+
+  const format = (date) => {
+    const dd = String(date.getDate()).padStart(2, '0');
+    const mm = String(date.getMonth() + 1).padStart(2, '0');
+    const yyyy = date.getFullYear();
+    return `${dd}/${mm}/${yyyy}`;
+  };
+
+  return `Semana de ${format(monday)} a ${format(friday)}`;
+};
+
+// Adiciona o rótulo da semana e o timestamp em todas as tarefas do Store
+const tasksMapped = computed(() => {
+  return taskStore.tasks.map(t => ({
+    ...t,
+    weekLabel: getWeekLabel(t.created_at),
+    timestamp: new Date(t.created_at || new Date()).getTime()
+  }));
+});
+
+// Extrai os alunos que possuem treinos para compor a lista do v-select
+const availableStudents = computed(() => {
+  const studentsMap = {};
+  taskStore.tasks.forEach(t => {
+    if (t.student_id && t.students?.name) {
+      studentsMap[t.student_id] = t.students.name;
+    }
+  });
+  return Object.keys(studentsMap).map(id => ({ id, name: studentsMap[id] }));
+});
+
+// Extrai as semanas baseado no que foi filtrado (dinâmico pelo aluno)
+const availableWeeks = computed(() => {
+  // Se um aluno estiver selecionado, filtra as semanas só para ele. Se não, mostra as semanas de todos.
+  const filteredForWeeks = selectedStudent.value 
+    ? tasksMapped.value.filter(t => t.student_id === selectedStudent.value)
+    : tasksMapped.value;
+    
+  const weeksMap = {};
+  filteredForWeeks.forEach(t => {
+     if(!weeksMap[t.weekLabel]) {
+        weeksMap[t.weekLabel] = t.timestamp;
+     }
+  });
+  
+  return Object.entries(weeksMap)
+    .sort((a, b) => b[1] - a[1]) // Garante da semana mais nova para a mais antiga
+    .map(entry => entry[0]);
+});
+
+// Auto-seleciona a semana mais recente sempre que a lista de semanas atualizar
+watch(availableWeeks, (newWeeks) => {
+  if (newWeeks.length > 0) {
+    if (!selectedWeek.value || !newWeeks.includes(selectedWeek.value)) {
+      selectedWeek.value = newWeeks[0];
+    }
+  } else {
+    selectedWeek.value = null;
+  }
+});
+
+// Filtra a lista principal de tarefas com base no aluno E semana escolhidos
+const filteredTasksList = computed(() => {
+  return tasksMapped.value.filter(t => {
+    const matchStudent = selectedStudent.value ? t.student_id === selectedStudent.value : true;
+    const matchWeek = selectedWeek.value ? t.weekLabel === selectedWeek.value : true;
+    return matchStudent && matchWeek;
+  });
+});
+
+// Aplica o agrupamento original, mas agora sobre a lista filtrada
 const groupedTasks = computed(() => {
   const students = {};
 
-  taskStore.tasks.forEach(task => {
+  filteredTasksList.value.forEach(task => {
     const sId = task.student_id || 'unknown';
     const sName = task.students?.name || 'Aluno Desconhecido';
     const day = task.day_of_week || 'Não Definido';
