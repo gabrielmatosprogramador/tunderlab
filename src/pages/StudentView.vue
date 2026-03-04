@@ -1,11 +1,14 @@
 <template>
-  <v-img 
-  src="@/assets/crossbackground.jpg" 
-  cover 
-  class="position-absolute w-100 h-100 opacity-25 ma-0 pl-0"
-  gradient="to top right, rgba(0,0,0,.8), rgba(77,77,77,.8)"
-  >
-    <v-container>
+  <div style="position: relative; min-height: 100vh;">
+    <v-img 
+      src="@/assets/crossbackground.jpg" 
+      cover 
+      class="position-fixed w-100 h-100 opacity-25 ma-0 pl-0"
+      style="top: 0; left: 0; z-index: 0; pointer-events: none;"
+      gradient="to top right, rgba(0,0,0,.8), rgba(77,77,77,.8)"
+    ></v-img>
+
+    <v-container style="position: relative; z-index: 1;">
       <div class="mb-6 mt-4">
         <h2 class="text-h4 text-primary font-weight-bold">Meus Treinos</h2>
         <p class="text-subtitle-1 text-grey">Bem-vindo à sua área de aluno</p>
@@ -53,7 +56,7 @@
         <v-btn color="error" variant="text" @click="handleLogout">Sair</v-btn>
       </div>
     </v-container>
-  </v-img>
+  </div>
 </template>
 
 <script setup>

@@ -1,11 +1,14 @@
 <template>
-  <v-img 
-  src="@/assets/crossbackground.jpg" 
-  cover 
-  class="position-absolute w-100 h-100 opacity-25"
-  gradient="to top right, rgba(0,43,124,.5), rgba(104,150,239,.5)">
-    <v-container class="fill-height bg-deep-blue-darken-4" fluid>
+  <div style="position: relative; min-height: 100vh;">
+    <v-img 
+      src="@/assets/crossbackground.jpg" 
+      cover 
+      class="position-fixed w-100 h-100 opacity-25"
+      style="top: 0; left: 0; z-index: 0; pointer-events: none;"
+      gradient="to top right, rgba(0,43,124,.5), rgba(104,150,239,.5)"
+    ></v-img>
 
+    <v-container class="fill-height bg-deep-blue-darken-4" fluid style="position: relative; z-index: 1;">
       <v-row justify="center" align="center">
         <v-col cols="12" sm="8" md="6" class="text-center">
 
@@ -34,7 +37,7 @@
         <DialogRegister @close="dialogRegister = false" />
       </v-dialog>
     </v-container>
-  </v-img>
+  </div>
 </template>
 
 <script setup>
